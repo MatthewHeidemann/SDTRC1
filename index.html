@@ -1,17 +1,142 @@
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Monday Night Doubles</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Monday Night Doubles 🎾</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f9f9f9;
+      margin: 0;
+      padding: 1rem;
+    }
+    header {
+      text-align: center;
+      background: #19856D;
+      color: white;
+      padding: 1rem;
+      font-size: 1.5rem;
+    }
+    section {
+      background: #FFFEFA;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+    }
+    button {
+      margin: 0.5rem 0.25rem;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 4px;
+      background: #196785;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-  <h1>Firebase Setup Test</h1>
+  <header>Monday Night Doubles 🎾</header>
+
+  <section id="admin-controls" style="display:none;">
+    <h3>Weekly Actions</h3>
+    <button onclick="toggleLock()">🔒 Lock Week</button>
+    <button id="setLineupBtn" style="display:none;" onclick="toggleLineup()">📋 Set Lineup</button>
+
+    <h3>App Administration</h3>
+    <button onclick="alert('Player Management not yet implemented')">👤 Player Management</button>
+    <button onclick="alert('Reset Week not yet implemented')">🔁 Reset Week</button>
+  </section>
+
+  <section id="admin-login">
+    <h3>Admin Login</h3>
+    <input type="password" id="adminPassword" placeholder="Enter admin password" />
+    <button onclick="handleAdminLogin()">Login</button>
+  </section>
+
+  <section id="results" style="display:none;">
+    <h3>Lineup for This Week</h3>
+    <div id="resultsMainPlay"></div>
+    <div id="resultsWalkOn1"></div>
+    <div id="resultsWalkOn2"></div>
+    <div id="resultsWalkOn3"></div>
+  </section>
+
+  <section id="rsvp">
+    <h3 id="rsvpPrompt">Update your status for Monday</h3>
+    <select id="playerSelect"><option value="">Select your name</option></select>
+    <label><input type="radio" name="availability" value="Yes" /> Yes</label>
+    <label><input type="radio" name="availability" value="No" /> No</label>
+    <button onclick="submitRSVP()">Submit</button>
+  </section>
+
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
   <script src="firebase.js"></script>
   <script>
-    // Test write to Firebase
-    db.ref("/test").set({ message: "Hello Firebase!" });
+    function handleAdminLogin() {
+      const pw = document.getElementById("adminPassword").value;
+      if (pw === "1") {
+        localStorage.setItem("isAdmin", "true");
+        document.getElementById("admin-login").style.display = "none";
+        document.getElementById("admin-controls").style.display = "block";
+        document.getElementById("setLineupBtn").style.display = "inline-block";
+      } else {
+        alert("Wrong password");
+      }
+    }
+
+    function submitRSVP() {
+      const name = document.getElementById("playerSelect").value;
+      const val = document.querySelector("input[name='availability']:checked")?.value;
+      if (!name || !val) return alert("Please complete RSVP.");
+      const mondayKey = getMondayKey();
+      db.ref("/responses/" + mondayKey + "/" + name).set({
+        status: val,
+        timestamp: Date.now()
+      }).then(() => alert("RSVP submitted."));
+    }
+
+    function getMondayKey() {
+      const now = new Date();
+      const day = now.getDay();
+      const monday = new Date(now);
+      monday.setDate(now.getDate() - day + (day === 0 ? -6 : 1));
+      return monday.toISOString().split("T")[0];
+    }
+
+    function toggleLock() {
+      const mondayKey = getMondayKey();
+      const ref = db.ref("/state/" + mondayKey + "/locked");
+      ref.once("value").then(snap => {
+        const locked = snap.val();
+        ref.set(!locked).then(() => {
+          alert(!locked ? "Week Locked" : "Week Unlocked");
+          document.getElementById("setLineupBtn").style.display = !locked ? "inline-block" : "none";
+        });
+      });
+    }
+
+    function toggleLineup() {
+      const results = document.getElementById("results");
+      const btn = document.getElementById("setLineupBtn");
+      if (results.style.display === "none") {
+        results.style.display = "block";
+        btn.textContent = "🔒 Hide Lineup";
+      } else {
+        results.style.display = "none";
+        btn.textContent = "📋 Set Lineup";
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      if (localStorage.getItem("isAdmin") === "true") {
+        document.getElementById("admin-login").style.display = "none";
+        document.getElementById("admin-controls").style.display = "block";
+        document.getElementById("setLineupBtn").style.display = "inline-block";
+      }
+    });
   </script>
 </body>
 </html>
