@@ -1,0 +1,17 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Monday Night Doubles</title>
+</head>
+<body>
+  <h1>Firebase Setup Test</h1>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
+  <script src="firebase.js"></script>
+  <script>
+    // Test write to Firebase
+    db.ref("/test").set({ message: "Hello Firebase!" });
+  </script>
+</body>
+</html>
