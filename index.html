@@ -299,6 +299,7 @@
 
 
 window.onload = () => {
+  firebaseReady.then(() => {
     loadResponses();
     loadPlayers();
     if (localStorage.getItem("isAdmin") === "true") {
