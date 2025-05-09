@@ -7,74 +7,122 @@
   <title>Monday Night Doubles 🎾</title>
   <style>
     body {
-      font-family: sans-serif;
+      font-family: 'Segoe UI', sans-serif;
       background: #f9f9f9;
       margin: 0;
-      padding: 1rem;
+      padding: 0;
     }
     header {
-      text-align: center;
       background: #19856D;
       color: white;
       padding: 1rem;
+      text-align: center;
       font-size: 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    main {
+      max-width: 700px;
+      margin: 2rem auto;
+      padding: 1rem;
     }
     section {
       background: #FFFEFA;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      border-radius: 8px;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    h3 {
+      margin-top: 0;
+    }
+    select, input[type="text"], input[type="number"], input[type="password"], button {
+      width: 100%;
+      margin: 0.5rem 0;
+      padding: 0.75rem;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
     }
     button {
-      margin: 0.5rem 0.25rem;
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 4px;
       background: #196785;
       color: white;
+      font-weight: bold;
+      border: none;
       cursor: pointer;
+    }
+    button:hover {
+      background: #155e78;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    ul li {
+      background: #eee;
+      padding: 0.5rem;
+      margin-bottom: 0.5rem;
+      border-radius: 5px;
+    }
+    .admin-panel.collapsed .admin-body {
+      display: none;
+    }
+    .toggle-admin {
+      background: transparent;
+      border: none;
+      font-size: 1rem;
+      text-align: left;
+      color: #196785;
+      cursor: pointer;
+      margin-bottom: 1rem;
     }
   </style>
 </head>
 <body>
   <header>Monday Night Doubles 🎾</header>
+  <main>
 
-  <section id="admin-controls" style="display:none;">
-    <h3>Weekly Actions</h3>
-    <button onclick="toggleLock()">🔒 Lock Week</button>
-    <button id="setLineupBtn" style="display:none;" onclick="toggleLineup()">📋 Set Lineup</button>
+    <section id="rsvp">
+      <h3 id="rsvpPrompt">Update your status for Monday</h3>
+      <select id="playerSelect"><option value="">Select your name</option></select>
+      <label><input type="radio" name="availability" value="Yes" /> Yes</label>
+      <label><input type="radio" name="availability" value="No" /> No</label>
+      <button onclick="submitRSVP()">Submit</button>
+    </section>
 
-    <h3>App Administration</h3>
-    <button onclick="alert('Player Management not yet implemented')">👤 Player Management</button>
-    <button onclick="alert('Reset Week not yet implemented')">🔁 Reset Week</button>
-  </section>
+    <section id="admin-panel" class="admin-panel collapsed">
+      <button class="toggle-admin" onclick="toggleAdminPanel()">🔑 Admin Controls</button>
+      <div class="admin-body">
+        <div id="admin-login">
+          <h3>Admin Login</h3>
+          <input type="password" id="adminPassword" placeholder="Enter admin password" />
+          <button onclick="handleAdminLogin()">Login</button>
+        </div>
+        <div id="admin-controls" style="display:none;">
+          <h3>Weekly Actions</h3>
+          <button onclick="toggleLock()">🔒 Lock Week</button>
+          <button id="setLineupBtn" style="display:none;" onclick="toggleLineup()">📋 Set Lineup</button>
 
-  <section id="admin-login">
-    <h3>Admin Login</h3>
-    <input type="password" id="adminPassword" placeholder="Enter admin password" />
-    <button onclick="handleAdminLogin()">Login</button>
-  </section>
+          <h3>App Administration</h3>
+          <button onclick="alert('Player Management not yet implemented')">👤 Player Management</button>
+          <button onclick="alert('Reset Week not yet implemented')">🔁 Reset Week</button>
+        </div>
+      </div>
+    </section>
 
-  <section id="results" style="display:none;">
-    <h3>Lineup for This Week</h3>
-    <div id="resultsMainPlay"></div>
-    <div id="resultsWalkOn1"></div>
-    <div id="resultsWalkOn2"></div>
-    <div id="resultsWalkOn3"></div>
-  </section>
-
-  <section id="rsvp">
-    <h3 id="rsvpPrompt">Update your status for Monday</h3>
-    <select id="playerSelect"><option value="">Select your name</option></select>
-    <label><input type="radio" name="availability" value="Yes" /> Yes</label>
-    <label><input type="radio" name="availability" value="No" /> No</label>
-    <button onclick="submitRSVP()">Submit</button>
-  </section>
+  </main>
 
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
   <script src="firebase.js"></script>
   <script>
+    function toggleAdminPanel() {
+      const panel = document.getElementById('admin-panel');
+      panel.classList.toggle('collapsed');
+    }
+
     function handleAdminLogin() {
       const pw = document.getElementById("adminPassword").value;
       if (pw === "1") {
@@ -87,55 +135,22 @@
       }
     }
 
-    function submitRSVP() {
-      const name = document.getElementById("playerSelect").value;
-      const val = document.querySelector("input[name='availability']:checked")?.value;
-      if (!name || !val) return alert("Please complete RSVP.");
-      const mondayKey = getMondayKey();
-      db.ref("/responses/" + mondayKey + "/" + name).set({
-        status: val,
-        timestamp: Date.now()
-      }).then(() => alert("RSVP submitted."));
-    }
-
-    function getMondayKey() {
-      const now = new Date();
-      const day = now.getDay();
-      const monday = new Date(now);
-      monday.setDate(now.getDate() - day + (day === 0 ? -6 : 1));
-      return monday.toISOString().split("T")[0];
-    }
-
-    function toggleLock() {
-      const mondayKey = getMondayKey();
-      const ref = db.ref("/state/" + mondayKey + "/locked");
-      ref.once("value").then(snap => {
-        const locked = snap.val();
-        ref.set(!locked).then(() => {
-          alert(!locked ? "Week Locked" : "Week Unlocked");
-          document.getElementById("setLineupBtn").style.display = !locked ? "inline-block" : "none";
+    function loadPlayers() {
+      const select = document.getElementById("playerSelect");
+      select.innerHTML = '<option value="">Select your name</option>';
+      db.ref("/users").once("value").then(snapshot => {
+        snapshot.forEach(child => {
+          const name = child.val();
+          const opt = document.createElement("option");
+          opt.value = name;
+          opt.textContent = name;
+          select.appendChild(opt);
         });
       });
     }
 
-    function toggleLineup() {
-      const results = document.getElementById("results");
-      const btn = document.getElementById("setLineupBtn");
-      if (results.style.display === "none") {
-        results.style.display = "block";
-        btn.textContent = "🔒 Hide Lineup";
-      } else {
-        results.style.display = "none";
-        btn.textContent = "📋 Set Lineup";
-      }
-    }
-
     document.addEventListener("DOMContentLoaded", () => {
-      if (localStorage.getItem("isAdmin") === "true") {
-        document.getElementById("admin-login").style.display = "none";
-        document.getElementById("admin-controls").style.display = "block";
-        document.getElementById("setLineupBtn").style.display = "inline-block";
-      }
+      loadPlayers();
     });
   </script>
 </body>
