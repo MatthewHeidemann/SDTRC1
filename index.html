@@ -90,7 +90,21 @@
       <label><input type="radio" name="availability" value="Yes" /> Yes</label>
       <label><input type="radio" name="availability" value="No" /> No</label>
       <button onclick="submitRSVP()">Submit</button>
-    </section>
+    
+<section id="lineup-view" style="margin-top: 1rem;">
+  <h3>Group Play</h3>
+  <ul id="mainPlayList" class="admin-group" ondrop="drop(event)" ondragover="allowDrop(event)"></ul>
+
+  <h3>Walk-On Court 1</h3>
+  <ul id="walkOn1" class="admin-group" ondrop="drop(event)" ondragover="allowDrop(event)"></ul>
+
+  <h3>Walk-On Court 2</h3>
+  <ul id="walkOn2" class="admin-group" ondrop="drop(event)" ondragover="allowDrop(event)"></ul>
+
+  <h3>Walk-On Court 3</h3>
+  <ul id="walkOn3" class="admin-group" ondrop="drop(event)" ondragover="allowDrop(event)"></ul>
+</section>
+
 
     <section id="admin-panel" class="admin-panel collapsed">
       <button class="toggle-admin" onclick="toggleAdminPanel()">🔑 Admin Controls</button>
@@ -241,6 +255,7 @@
 
 
 document.addEventListener("DOMContentLoaded", () => {
+    loadResponses();
     loadPlayers();
     if (localStorage.getItem("isAdmin") === "true") {
       document.getElementById("admin-login").style.display = "none";
