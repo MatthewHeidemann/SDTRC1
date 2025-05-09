@@ -83,28 +83,13 @@
 <body>
   <header>Monday Night Doubles 🎾</header>
   <main>
-
     <section id="rsvp">
       <h3 id="rsvpPrompt">Update your status for Monday</h3>
       <select id="playerSelect"><option value="">Select your name</option></select>
       <label><input type="radio" name="availability" value="Yes" /> Yes</label>
       <label><input type="radio" name="availability" value="No" /> No</label>
       <button onclick="submitRSVP()">Submit</button>
-    
-<section id="lineup-view" style="margin-top: 1rem;">
-  <h3>Group Play</h3>
-  <ul id="mainPlayList" class="admin-group" ondrop="drop(event)" ondragover="allowDrop(event)"></ul>
-
-  <h3>Walk-On Court 1</h3>
-  <ul id="walkOn1" class="admin-group" ondrop="drop(event)" ondragover="allowDrop(event)"></ul>
-
-  <h3>Walk-On Court 2</h3>
-  <ul id="walkOn2" class="admin-group" ondrop="drop(event)" ondragover="allowDrop(event)"></ul>
-
-  <h3>Walk-On Court 3</h3>
-  <ul id="walkOn3" class="admin-group" ondrop="drop(event)" ondragover="allowDrop(event)"></ul>
-</section>
-
+    </section>
 
     <section id="admin-panel" class="admin-panel collapsed">
       <button class="toggle-admin" onclick="toggleAdminPanel()">🔑 Admin Controls</button>
@@ -126,190 +111,133 @@
       </div>
     </section>
 
-  
-<section id="manage-players-page" style="display:none;">
-  <h3>Manage Players</h3>
-  <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
-    <input type="text" id="newPlayerInput" style="width: 100%; padding: 0.5rem; border-radius: 6px; border: 1px solid #ccc;" placeholder="Enter new player name" style="flex: 1;" />
-    <button onclick="addPlayer()" style="width: auto; padding: 0.5rem 1rem;">➕ Add</button>
-  </div>
-  <ul id="playersList" style="list-style: none; padding: 0;"></ul>
-  <button onclick="goBackToAdmin()">⬅️ Back to Admin</button>
-</section>
+    <section id="manage-players-page" style="display:none;">
+      <h3>Manage Players</h3>
+      <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+        <input type="text" id="newPlayerInput" style="width: 100%; padding: 0.5rem; border-radius: 6px; border: 1px solid #ccc;" placeholder="Enter new player name" style="flex: 1;" />
+        <button onclick="addPlayer()" style="width: auto; padding: 0.5rem 1rem;">➕ Add</button>
+      </div>
+      <ul id="playersList" style="list-style: none; padding: 0;"></ul>
+      <button onclick="goBackToAdmin()">⬅️ Back to Admin</button>
+    </section>
+  </main>
 
-</main>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
+  <script src="firebase.js"></script>
 
-  
-  
-  
-  
-
-<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
-<script src="firebase.js"></script>
-
-<script>
-  function getMondayKey() {
-    const today = new Date();
-    const day = today.getDay();
-    const monday = new Date(today);
-    monday.setDate(today.getDate() - day + (day === 0 ? -6 : 1));
-    return monday.toISOString().split("T")[0];
-  }
-</script>
-
-
-<script>
-  function toggleAdminPanel() {
-    const panel = document.getElementById('admin-panel');
-    panel.classList.toggle('collapsed');
-  }
-
-  function handleAdminLogin() {
-    const pw = document.getElementById("adminPassword").value;
-    if (pw === "1") {
-      localStorage.setItem("isAdmin", "true");
-      document.getElementById("admin-login").style.display = "none";
-      document.getElementById("admin-controls").style.display = "block";
-      const btn = document.getElementById("setLineupBtn");
-      if (btn) btn.style.display = "inline-block";
-    } else {
-      alert("Wrong password");
+  <script>
+    function toggleAdminPanel() {
+      const panel = document.getElementById('admin-panel');
+      panel.classList.toggle('collapsed');
     }
-  }
+
+    function handleAdminLogin() {
+      const pw = document.getElementById("adminPassword").value;
+      if (pw === "1") {
+        localStorage.setItem("isAdmin", "true");
+        document.getElementById("admin-login").style.display = "none";
+        document.getElementById("admin-controls").style.display = "block";
+        const btn = document.getElementById("setLineupBtn");
+        if (btn) btn.style.display = "inline-block";
+      } else {
+        alert("Wrong password");
+      }
+    }
 
     function showManagePlayersPage() {
-    document.getElementById("admin-controls").style.display = "none";
-    document.getElementById("manage-players-page").style.display = "block";
-    loadPlayerList();
-  }
-
-  function goBackToAdmin() {
-    document.getElementById("manage-players-page").style.display = "none";
-    document.getElementById("admin-controls").style.display = "block";
-  }
-
-  function loadPlayerList() {
-    const ul = document.getElementById("playersList");
-    ul.innerHTML = "";
-    db.ref("/users").once("value").then(snapshot => {
-      const players = [];
-      snapshot.forEach(child => {
-        players.push({ key: child.key, name: child.val() || "(Unnamed)" });
-      });
-
-      players.sort((a, b) => a.name.localeCompare(b.name));
-
-      players.forEach(({ key, name }) => {
-        const li = document.createElement("li");
-        li.style.display = "flex";
-        li.style.alignItems = "center";
-        li.style.gap = "0.5rem";
-        li.style.marginBottom = "0.5rem";
-
-        const input = document.createElement("input");
-        input.type = "text";
-        input.value = name;
-        input.style.flex = "1";
-        input.style.padding = "0.5rem";
-        input.style.border = "1px solid #ccc";
-        input.style.borderRadius = "6px";
-        input.onchange = () => db.ref("/users/" + key).set(input.value);
-
-        const delBtn = document.createElement("button");
-        delBtn.textContent = "❌";
-        delBtn.style.width = "auto";
-        delBtn.style.padding = "0.5rem 0.75rem";
-        delBtn.style.borderRadius = "6px";
-        delBtn.onclick = () => {
-          if (confirm("Delete player '" + name + "'?")) {
-            db.ref("/users/" + key).remove().then(loadPlayerList);
-          }
-        };
-
-        li.appendChild(input);
-        li.appendChild(delBtn);
-        ul.appendChild(li);
-      });
-    });
-  }
-
-  function addPlayer() {
-    const name = document.getElementById("newPlayerInput").value.trim();
-    if (!name) return alert("Enter a player name.");
-    db.ref("/users").push(name).then(() => {
-      document.getElementById("newPlayerInput").value = "";
+      document.getElementById("admin-controls").style.display = "none";
+      document.getElementById("manage-players-page").style.display = "block";
       loadPlayerList();
-    });
-  }
-
-  
-  function loadPlayers() {
-    const select = document.getElementById("playerSelect");
-    select.innerHTML = '<option value="">Select your name</option>';
-    db.ref("/users").once("value").then(snapshot => {
-      const names = [];
-      snapshot.forEach(child => {
-        const name = child.val();
-        if (name) names.push(name.trim());
-      });
-      names.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
-      names.forEach(name => {
-        const opt = document.createElement("option");
-        opt.value = name;
-        opt.textContent = name;
-        select.appendChild(opt);
-      });
-    });
-  }
-
-
-
-  function loadResponses() {
-    const mondayKey = getMondayKey();
-    db.ref("/responses/" + mondayKey).once("value").then(snapshot => {
-      const yes = [];
-
-      snapshot.forEach(child => {
-        const name = child.key;
-        const value = child.val();
-        const response = typeof value === 'string' ? { status: value, timestamp: null } : value;
-        if (response.status === "Yes") {
-          yes.push({ name, timestamp: response.timestamp || 0 });
-        }
-      });
-
-      yes.sort((a, b) => a.timestamp - b.timestamp);
-
-      const list = document.getElementById("mainPlayList");
-      list.innerHTML = "";
-      yes.forEach(({ name }) => {
-        const li = document.createElement("li");
-        li.textContent = name;
-        li.id = "admin-player-" + name.replace(/\s+/g, '-').toLowerCase();
-        const isAdmin = localStorage.getItem("isAdmin") === "true";
-        if (isAdmin) {
-          li.setAttribute("draggable", "true");
-          li.setAttribute("ondragstart", "drag(event)");
-        }
-        list.appendChild(li);
-      });
-    });
-  }
-
-
-window.onload = () => {
-    loadResponses();
-    loadPlayers();
-    if (localStorage.getItem("isAdmin") === "true") {
-      document.getElementById("admin-login").style.display = "none";
-      document.getElementById("admin-controls").style.display = "block";
-      const btn = document.getElementById("setLineupBtn");
-      if (btn) btn.style.display = "inline-block";
     }
-  });
-</script>
 
+    function goBackToAdmin() {
+      document.getElementById("manage-players-page").style.display = "none";
+      document.getElementById("admin-controls").style.display = "block";
+    }
 
+    function loadPlayerList() {
+      const ul = document.getElementById("playersList");
+      ul.innerHTML = "";
+      db.ref("/users").once("value").then(snapshot => {
+        const players = [];
+        snapshot.forEach(child => {
+          players.push({ key: child.key, name: child.val() || "(Unnamed)" });
+        });
+
+        players.sort((a, b) => a.name.localeCompare(b.name));
+
+        players.forEach(({ key, name }) => {
+          const li = document.createElement("li");
+          li.style.display = "flex";
+          li.style.alignItems = "center";
+          li.style.gap = "0.5rem";
+          li.style.marginBottom = "0.5rem";
+
+          const input = document.createElement("input");
+          input.type = "text";
+          input.value = name;
+          input.style.flex = "1";
+          input.style.padding = "0.5rem";
+          input.style.border = "1px solid #ccc";
+          input.style.borderRadius = "6px";
+          input.onchange = () => db.ref("/users/" + key).set(input.value);
+
+          const delBtn = document.createElement("button");
+          delBtn.textContent = "❌";
+          delBtn.style.width = "auto";
+          delBtn.style.padding = "0.5rem 0.75rem";
+          delBtn.style.borderRadius = "6px";
+          delBtn.onclick = () => {
+            if (confirm("Delete player '" + name + "'?")) {
+              db.ref("/users/" + key).remove().then(loadPlayerList);
+            }
+          };
+
+          li.appendChild(input);
+          li.appendChild(delBtn);
+          ul.appendChild(li);
+        });
+      });
+    }
+
+    function addPlayer() {
+      const name = document.getElementById("newPlayerInput").value.trim();
+      if (!name) return alert("Enter a player name.");
+      db.ref("/users").push(name).then(() => {
+        document.getElementById("newPlayerInput").value = "";
+        loadPlayerList();
+      });
+    }
+
+    function loadPlayers() {
+      const select = document.getElementById("playerSelect");
+      select.innerHTML = '<option value="">Select your name</option>';
+      db.ref("/users").once("value").then(snapshot => {
+        const names = [];
+        snapshot.forEach(child => {
+          const name = child.val();
+          if (name) names.push(name.trim());
+        });
+        names.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+        names.forEach(name => {
+          const opt = document.createElement("option");
+          opt.value = name;
+          opt.textContent = name;
+          select.appendChild(opt);
+        });
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      loadPlayers();
+      if (localStorage.getItem("isAdmin") === "true") {
+        document.getElementById("admin-login").style.display = "none";
+        document.getElementById("admin-controls").style.display = "block";
+        const btn = document.getElementById("setLineupBtn");
+        if (btn) btn.style.display = "inline-block";
+      }
+    });
+  </script>
 </body>
 </html>
