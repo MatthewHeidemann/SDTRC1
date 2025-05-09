@@ -148,6 +148,16 @@
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
 <script src="firebase.js"></script>
 
+<script>
+  function getMondayKey() {
+    const today = new Date();
+    const day = today.getDay();
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - day + (day === 0 ? -6 : 1));
+    return monday.toISOString().split("T")[0];
+  }
+</script>
+
 
 <script>
   function toggleAdminPanel() {
@@ -288,7 +298,7 @@
   }
 
 
-document.addEventListener("DOMContentLoaded", () => {
+window.onload = () => {
     loadResponses();
     loadPlayers();
     if (localStorage.getItem("isAdmin") === "true") {
