@@ -154,18 +154,25 @@
     }
   }
 
-  function loadPlayers() {
-    const select = document.getElementById("playerSelect");
-    select.innerHTML = '<option value="">Select your name</option>';
-    db.ref("/users").once("value").then(snapshot => {
-      snapshot.forEach(child => {
-        const name = child.val();
-        const opt = document.createElement("option");
-        opt.value = name;
-        opt.textContent = name;
-        select.appendChild(opt);
-      });
+  
+function loadPlayers() {
+  const select = document.getElementById("playerSelect");
+  select.innerHTML = '<option value="">Select your name</option>';
+  db.ref("/users").once("value").then(snapshot => {
+    const players = [];
+    snapshot.forEach(child => {
+      players.push(child.val());
     });
+    players.sort((a, b) => a.localeCompare(b));
+    players.forEach(name => {
+      const opt = document.createElement("option");
+      opt.value = name;
+      opt.textContent = name;
+      select.appendChild(opt);
+    });
+  });
+}
+;
   }
 
   function showManagePlayersPage() {
