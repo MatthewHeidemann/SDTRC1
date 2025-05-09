@@ -154,21 +154,7 @@
     }
   }
 
-  function loadPlayers() {
-    const select = document.getElementById("playerSelect");
-    select.innerHTML = '<option value="">Select your name</option>';
-    db.ref("/users").once("value").then(snapshot => {
-      snapshot.forEach(child => {
-        const name = child.val();
-        const opt = document.createElement("option");
-        opt.value = name;
-        opt.textContent = name;
-        select.appendChild(opt);
-      });
-    });
-  }
-
-  function showManagePlayersPage() {
+    function showManagePlayersPage() {
     document.getElementById("admin-controls").style.display = "none";
     document.getElementById("manage-players-page").style.display = "block";
     loadPlayerList();
@@ -233,7 +219,28 @@
     });
   }
 
-  document.addEventListener("DOMContentLoaded", () => {
+  
+  function loadPlayers() {
+    const select = document.getElementById("playerSelect");
+    select.innerHTML = '<option value="">Select your name</option>';
+    db.ref("/users").once("value").then(snapshot => {
+      const names = [];
+      snapshot.forEach(child => {
+        const name = child.val();
+        if (name) names.push(name.trim());
+      });
+      names.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+      names.forEach(name => {
+        const opt = document.createElement("option");
+        opt.value = name;
+        opt.textContent = name;
+        select.appendChild(opt);
+      });
+    });
+  }
+
+
+document.addEventListener("DOMContentLoaded", () => {
     loadPlayers();
     if (localStorage.getItem("isAdmin") === "true") {
       document.getElementById("admin-login").style.display = "none";
