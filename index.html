@@ -137,15 +137,18 @@ function goBackToAdmin() {
   document.getElementById("admin-controls").style.display = "block";
 }
 
+
 function loadPlayerList() {
   const ul = document.getElementById("playersList");
   ul.innerHTML = "";
   db.ref("/users").once("value").then(snapshot => {
     const players = [];
     snapshot.forEach(child => {
-      players.push({ key: child.key, name: child.val() });
+      players.push({ key: child.key, name: child.val() || "(Unnamed)" });
     });
+
     players.sort((a, b) => a.name.localeCompare(b.name));
+
     players.forEach(({ key, name }) => {
       const li = document.createElement("li");
       li.style.display = "flex";
@@ -157,10 +160,17 @@ function loadPlayerList() {
       input.type = "text";
       input.value = name;
       input.style.flex = "1";
+      input.style.padding = "0.5rem";
+      input.style.border = "1px solid #ccc";
+      input.style.borderRadius = "6px";
+
       input.onchange = () => db.ref("/users/" + key).set(input.value);
 
       const delBtn = document.createElement("button");
       delBtn.textContent = "❌";
+      delBtn.style.width = "auto";
+      delBtn.style.padding = "0.5rem 0.75rem";
+      delBtn.style.borderRadius = "6px";
       delBtn.onclick = () => {
         if (confirm("Delete player '" + name + "'?")) {
           db.ref("/users/" + key).remove().then(loadPlayerList);
@@ -172,6 +182,8 @@ function loadPlayerList() {
       ul.appendChild(li);
     });
   });
+}
+);
 }
 
 function addPlayer() {
@@ -202,15 +214,18 @@ function goBackToAdmin() {
   document.getElementById("admin-controls").style.display = "block";
 }
 
+
 function loadPlayerList() {
   const ul = document.getElementById("playersList");
   ul.innerHTML = "";
   db.ref("/users").once("value").then(snapshot => {
     const players = [];
     snapshot.forEach(child => {
-      players.push({ key: child.key, name: child.val() });
+      players.push({ key: child.key, name: child.val() || "(Unnamed)" });
     });
+
     players.sort((a, b) => a.name.localeCompare(b.name));
+
     players.forEach(({ key, name }) => {
       const li = document.createElement("li");
       li.style.display = "flex";
@@ -222,10 +237,17 @@ function loadPlayerList() {
       input.type = "text";
       input.value = name;
       input.style.flex = "1";
+      input.style.padding = "0.5rem";
+      input.style.border = "1px solid #ccc";
+      input.style.borderRadius = "6px";
+
       input.onchange = () => db.ref("/users/" + key).set(input.value);
 
       const delBtn = document.createElement("button");
       delBtn.textContent = "❌";
+      delBtn.style.width = "auto";
+      delBtn.style.padding = "0.5rem 0.75rem";
+      delBtn.style.borderRadius = "6px";
       delBtn.onclick = () => {
         if (confirm("Delete player '" + name + "'?")) {
           db.ref("/users/" + key).remove().then(loadPlayerList);
@@ -237,6 +259,8 @@ function loadPlayerList() {
       ul.appendChild(li);
     });
   });
+}
+);
 }
 
 function addPlayer() {
@@ -267,15 +291,18 @@ function goBackToAdmin() {
   document.getElementById("admin-controls").style.display = "block";
 }
 
+
 function loadPlayerList() {
   const ul = document.getElementById("playersList");
   ul.innerHTML = "";
   db.ref("/users").once("value").then(snapshot => {
     const players = [];
     snapshot.forEach(child => {
-      players.push({ key: child.key, name: child.val() });
+      players.push({ key: child.key, name: child.val() || "(Unnamed)" });
     });
+
     players.sort((a, b) => a.name.localeCompare(b.name));
+
     players.forEach(({ key, name }) => {
       const li = document.createElement("li");
       li.style.display = "flex";
@@ -287,10 +314,17 @@ function loadPlayerList() {
       input.type = "text";
       input.value = name;
       input.style.flex = "1";
+      input.style.padding = "0.5rem";
+      input.style.border = "1px solid #ccc";
+      input.style.borderRadius = "6px";
+
       input.onchange = () => db.ref("/users/" + key).set(input.value);
 
       const delBtn = document.createElement("button");
       delBtn.textContent = "❌";
+      delBtn.style.width = "auto";
+      delBtn.style.padding = "0.5rem 0.75rem";
+      delBtn.style.borderRadius = "6px";
       delBtn.onclick = () => {
         if (confirm("Delete player '" + name + "'?")) {
           db.ref("/users/" + key).remove().then(loadPlayerList);
@@ -302,6 +336,8 @@ function loadPlayerList() {
       ul.appendChild(li);
     });
   });
+}
+);
 }
 
 function addPlayer() {
@@ -367,15 +403,18 @@ function goBackToAdmin() {
   document.getElementById("admin-controls").style.display = "block";
 }
 
+
 function loadPlayerList() {
   const ul = document.getElementById("playersList");
   ul.innerHTML = "";
   db.ref("/users").once("value").then(snapshot => {
     const players = [];
     snapshot.forEach(child => {
-      players.push({ key: child.key, name: child.val() });
+      players.push({ key: child.key, name: child.val() || "(Unnamed)" });
     });
+
     players.sort((a, b) => a.name.localeCompare(b.name));
+
     players.forEach(({ key, name }) => {
       const li = document.createElement("li");
       li.style.display = "flex";
@@ -387,10 +426,17 @@ function loadPlayerList() {
       input.type = "text";
       input.value = name;
       input.style.flex = "1";
+      input.style.padding = "0.5rem";
+      input.style.border = "1px solid #ccc";
+      input.style.borderRadius = "6px";
+
       input.onchange = () => db.ref("/users/" + key).set(input.value);
 
       const delBtn = document.createElement("button");
       delBtn.textContent = "❌";
+      delBtn.style.width = "auto";
+      delBtn.style.padding = "0.5rem 0.75rem";
+      delBtn.style.borderRadius = "6px";
       delBtn.onclick = () => {
         if (confirm("Delete player '" + name + "'?")) {
           db.ref("/users/" + key).remove().then(loadPlayerList);
@@ -402,6 +448,8 @@ function loadPlayerList() {
       ul.appendChild(li);
     });
   });
+}
+);
 }
 
 function addPlayer() {
