@@ -115,9 +115,9 @@
   
 <section id="manage-players-page" style="display:none;">
   <h3>Manage Players</h3>
-  <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
-    <input type="text" id="newPlayerInput" style="width: 100%; padding: 0.5rem;" placeholder="Enter new player name" style="flex: 1;" />
-    <button style="width: 150px;" onclick="addPlayer()">➕ Add</button>
+  <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+    <input type="text" id="newPlayerInput" placeholder="Enter new player name" style="flex: 1;" />
+    <button onclick="addPlayer()">➕ Add</button>
   </div>
   <ul id="playersList" style="list-style: none; padding: 0;"></ul>
   <button onclick="goBackToAdmin()">⬅️ Back to Admin</button>
@@ -126,9 +126,7 @@
 </main>
 
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js">
-
 function showManagePlayersPage() {
-  console.log("Opening player management panel...");
   document.getElementById("admin-controls").style.display = "none";
   document.getElementById("manage-players-page").style.display = "block";
   loadPlayerList();
@@ -146,71 +144,7 @@ function loadPlayerList() {
   db.ref("/users").once("value").then(snapshot => {
     const players = [];
     snapshot.forEach(child => {
-      const name = child.val() || "(Unnamed)";
-      const key = child.key;
-      players.push({ key, name });
-    });
-
-    players.sort((a, b) => a.name.localeCompare(b.name));
-
-    players.forEach(({ key, name }) => {
-      const li = document.createElement("li");
-      li.style.display = "flex";
-      li.style.alignItems = "center";
-      li.style.gap = "0.5rem";
-      li.style.marginBottom = "0.5rem";
-
-      const input = document.createElement("input");
-      input.type = "text";
-      input.value = name;
-      input.style.flex = "1";
-      input.style.padding = "0.5rem";
-      input.onchange = () => db.ref("/users/" + key).set(input.value);
-
-      const delBtn = document.createElement("button");
-      delBtn.textContent = "❌";
-      delBtn.style.width = "60px";
-      delBtn.onclick = () => {
-        if (confirm("Delete player '" + name + "'?")) {
-          db.ref("/users/" + key).remove().then(loadPlayerList);
-        }
-      };
-
-      li.appendChild(input);
-      li.appendChild(delBtn);
-      ul.appendChild(li);
-    });
-  });
-}
-);
-}
-
-function addPlayer() {
-  const name = document.getElementById("newPlayerInput").value.trim();
-  if (!name) return alert("Enter a player name.");
-  console.log("Adding player:", name);
-  db.ref("/users").push(name).then(() => {
-    document.getElementById("newPlayerInput").value = "";
-    loadPlayerList();
-  });
-}
-
-
-function goBackToAdmin() {
-  document.getElementById("manage-players-page").style.display = "none";
-  document.getElementById("admin-controls").style.display = "block";
-}
-
-
-function loadPlayerList() {
-  const ul = document.getElementById("playersList");
-  ul.innerHTML = "";
-  db.ref("/users").once("value").then(snapshot => {
-    const players = [];
-    snapshot.forEach(child => {
-      const name = child.val() || "(Unnamed)";
-      const key = child.key;
-      players.push({ key, name });
+      players.push({ key: child.key, name: child.val() || "(Unnamed)" });
     });
 
     players.sort((a, b) => a.name.localeCompare(b.name));
@@ -258,9 +192,7 @@ function addPlayer() {
 
 </script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js">
-
 function showManagePlayersPage() {
-  console.log("Opening player management panel...");
   document.getElementById("admin-controls").style.display = "none";
   document.getElementById("manage-players-page").style.display = "block";
   loadPlayerList();
@@ -278,71 +210,7 @@ function loadPlayerList() {
   db.ref("/users").once("value").then(snapshot => {
     const players = [];
     snapshot.forEach(child => {
-      const name = child.val() || "(Unnamed)";
-      const key = child.key;
-      players.push({ key, name });
-    });
-
-    players.sort((a, b) => a.name.localeCompare(b.name));
-
-    players.forEach(({ key, name }) => {
-      const li = document.createElement("li");
-      li.style.display = "flex";
-      li.style.alignItems = "center";
-      li.style.gap = "0.5rem";
-      li.style.marginBottom = "0.5rem";
-
-      const input = document.createElement("input");
-      input.type = "text";
-      input.value = name;
-      input.style.flex = "1";
-      input.style.padding = "0.5rem";
-      input.onchange = () => db.ref("/users/" + key).set(input.value);
-
-      const delBtn = document.createElement("button");
-      delBtn.textContent = "❌";
-      delBtn.style.width = "60px";
-      delBtn.onclick = () => {
-        if (confirm("Delete player '" + name + "'?")) {
-          db.ref("/users/" + key).remove().then(loadPlayerList);
-        }
-      };
-
-      li.appendChild(input);
-      li.appendChild(delBtn);
-      ul.appendChild(li);
-    });
-  });
-}
-);
-}
-
-function addPlayer() {
-  const name = document.getElementById("newPlayerInput").value.trim();
-  if (!name) return alert("Enter a player name.");
-  console.log("Adding player:", name);
-  db.ref("/users").push(name).then(() => {
-    document.getElementById("newPlayerInput").value = "";
-    loadPlayerList();
-  });
-}
-
-
-function goBackToAdmin() {
-  document.getElementById("manage-players-page").style.display = "none";
-  document.getElementById("admin-controls").style.display = "block";
-}
-
-
-function loadPlayerList() {
-  const ul = document.getElementById("playersList");
-  ul.innerHTML = "";
-  db.ref("/users").once("value").then(snapshot => {
-    const players = [];
-    snapshot.forEach(child => {
-      const name = child.val() || "(Unnamed)";
-      const key = child.key;
-      players.push({ key, name });
+      players.push({ key: child.key, name: child.val() || "(Unnamed)" });
     });
 
     players.sort((a, b) => a.name.localeCompare(b.name));
@@ -390,9 +258,7 @@ function addPlayer() {
 
 </script>
   <script src="firebase.js">
-
 function showManagePlayersPage() {
-  console.log("Opening player management panel...");
   document.getElementById("admin-controls").style.display = "none";
   document.getElementById("manage-players-page").style.display = "block";
   loadPlayerList();
@@ -410,71 +276,7 @@ function loadPlayerList() {
   db.ref("/users").once("value").then(snapshot => {
     const players = [];
     snapshot.forEach(child => {
-      const name = child.val() || "(Unnamed)";
-      const key = child.key;
-      players.push({ key, name });
-    });
-
-    players.sort((a, b) => a.name.localeCompare(b.name));
-
-    players.forEach(({ key, name }) => {
-      const li = document.createElement("li");
-      li.style.display = "flex";
-      li.style.alignItems = "center";
-      li.style.gap = "0.5rem";
-      li.style.marginBottom = "0.5rem";
-
-      const input = document.createElement("input");
-      input.type = "text";
-      input.value = name;
-      input.style.flex = "1";
-      input.style.padding = "0.5rem";
-      input.onchange = () => db.ref("/users/" + key).set(input.value);
-
-      const delBtn = document.createElement("button");
-      delBtn.textContent = "❌";
-      delBtn.style.width = "60px";
-      delBtn.onclick = () => {
-        if (confirm("Delete player '" + name + "'?")) {
-          db.ref("/users/" + key).remove().then(loadPlayerList);
-        }
-      };
-
-      li.appendChild(input);
-      li.appendChild(delBtn);
-      ul.appendChild(li);
-    });
-  });
-}
-);
-}
-
-function addPlayer() {
-  const name = document.getElementById("newPlayerInput").value.trim();
-  if (!name) return alert("Enter a player name.");
-  console.log("Adding player:", name);
-  db.ref("/users").push(name).then(() => {
-    document.getElementById("newPlayerInput").value = "";
-    loadPlayerList();
-  });
-}
-
-
-function goBackToAdmin() {
-  document.getElementById("manage-players-page").style.display = "none";
-  document.getElementById("admin-controls").style.display = "block";
-}
-
-
-function loadPlayerList() {
-  const ul = document.getElementById("playersList");
-  ul.innerHTML = "";
-  db.ref("/users").once("value").then(snapshot => {
-    const players = [];
-    snapshot.forEach(child => {
-      const name = child.val() || "(Unnamed)";
-      const key = child.key;
-      players.push({ key, name });
+      players.push({ key: child.key, name: child.val() || "(Unnamed)" });
     });
 
     players.sort((a, b) => a.name.localeCompare(b.name));
@@ -557,9 +359,7 @@ function addPlayer() {
       loadPlayers();
     });
   
-
 function showManagePlayersPage() {
-  console.log("Opening player management panel...");
   document.getElementById("admin-controls").style.display = "none";
   document.getElementById("manage-players-page").style.display = "block";
   loadPlayerList();
@@ -577,71 +377,7 @@ function loadPlayerList() {
   db.ref("/users").once("value").then(snapshot => {
     const players = [];
     snapshot.forEach(child => {
-      const name = child.val() || "(Unnamed)";
-      const key = child.key;
-      players.push({ key, name });
-    });
-
-    players.sort((a, b) => a.name.localeCompare(b.name));
-
-    players.forEach(({ key, name }) => {
-      const li = document.createElement("li");
-      li.style.display = "flex";
-      li.style.alignItems = "center";
-      li.style.gap = "0.5rem";
-      li.style.marginBottom = "0.5rem";
-
-      const input = document.createElement("input");
-      input.type = "text";
-      input.value = name;
-      input.style.flex = "1";
-      input.style.padding = "0.5rem";
-      input.onchange = () => db.ref("/users/" + key).set(input.value);
-
-      const delBtn = document.createElement("button");
-      delBtn.textContent = "❌";
-      delBtn.style.width = "60px";
-      delBtn.onclick = () => {
-        if (confirm("Delete player '" + name + "'?")) {
-          db.ref("/users/" + key).remove().then(loadPlayerList);
-        }
-      };
-
-      li.appendChild(input);
-      li.appendChild(delBtn);
-      ul.appendChild(li);
-    });
-  });
-}
-);
-}
-
-function addPlayer() {
-  const name = document.getElementById("newPlayerInput").value.trim();
-  if (!name) return alert("Enter a player name.");
-  console.log("Adding player:", name);
-  db.ref("/users").push(name).then(() => {
-    document.getElementById("newPlayerInput").value = "";
-    loadPlayerList();
-  });
-}
-
-
-function goBackToAdmin() {
-  document.getElementById("manage-players-page").style.display = "none";
-  document.getElementById("admin-controls").style.display = "block";
-}
-
-
-function loadPlayerList() {
-  const ul = document.getElementById("playersList");
-  ul.innerHTML = "";
-  db.ref("/users").once("value").then(snapshot => {
-    const players = [];
-    snapshot.forEach(child => {
-      const name = child.val() || "(Unnamed)";
-      const key = child.key;
-      players.push({ key, name });
+      players.push({ key: child.key, name: child.val() || "(Unnamed)" });
     });
 
     players.sort((a, b) => a.name.localeCompare(b.name));
