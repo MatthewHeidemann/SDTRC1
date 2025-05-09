@@ -134,6 +134,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
 <script src="firebase.js"></script>
 
+
 <script>
   function toggleAdminPanel() {
     const panel = document.getElementById('admin-panel');
@@ -146,7 +147,8 @@
       localStorage.setItem("isAdmin", "true");
       document.getElementById("admin-login").style.display = "none";
       document.getElementById("admin-controls").style.display = "block";
-      document.getElementById("setLineupBtn").style.display = "inline-block";
+      const btn = document.getElementById("setLineupBtn");
+      if (btn) btn.style.display = "inline-block";
     } else {
       alert("Wrong password");
     }
@@ -236,9 +238,12 @@
     if (localStorage.getItem("isAdmin") === "true") {
       document.getElementById("admin-login").style.display = "none";
       document.getElementById("admin-controls").style.display = "block";
+      const btn = document.getElementById("setLineupBtn");
+      if (btn) btn.style.display = "inline-block";
     }
   });
 </script>
+
 
 </body>
 </html>
