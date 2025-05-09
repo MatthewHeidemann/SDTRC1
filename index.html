@@ -254,6 +254,40 @@
   }
 
 
+
+  function loadResponses() {
+    const mondayKey = getMondayKey();
+    db.ref("/responses/" + mondayKey).once("value").then(snapshot => {
+      const yes = [];
+
+      snapshot.forEach(child => {
+        const name = child.key;
+        const value = child.val();
+        const response = typeof value === 'string' ? { status: value, timestamp: null } : value;
+        if (response.status === "Yes") {
+          yes.push({ name, timestamp: response.timestamp || 0 });
+        }
+      });
+
+      yes.sort((a, b) => a.timestamp - b.timestamp);
+
+      const list = document.getElementById("mainPlayList");
+      list.innerHTML = "";
+      yes.forEach(({ name }) => {
+        const li = document.createElement("li");
+        li.textContent = name;
+        li.id = "admin-player-" + name.replace(/\s+/g, '-').toLowerCase();
+        const isAdmin = localStorage.getItem("isAdmin") === "true";
+        if (isAdmin) {
+          li.setAttribute("draggable", "true");
+          li.setAttribute("ondragstart", "drag(event)");
+        }
+        list.appendChild(li);
+      });
+    });
+  }
+
+
 document.addEventListener("DOMContentLoaded", () => {
     loadResponses();
     loadPlayers();
